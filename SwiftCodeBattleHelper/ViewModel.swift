@@ -39,53 +39,85 @@ final class ViewModel: ObservableObject {
     func executeCommand(selectedFileURL: URL, inputText: String) {
         outputText = ""
 
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/swift")
-        process.arguments = [selectedFileURL.path]
+        // 書き込み可能な一時ディレクトリを取得
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let executableURL = tempDirectory.appendingPathComponent(UUID().uuidString) // 一意の名前を付ける
+
+        // 1. swiftc file の実行
+        let compileProcess = Process()
+        compileProcess.executableURL = URL(fileURLWithPath: "/usr/bin/swiftc")
+        compileProcess.arguments = [selectedFileURL.path, "-o", executableURL.path]
+
+        let errorPipe = Pipe() // エラー出力用のパイプ
+        compileProcess.standardError = errorPipe
+
+        do {
+            try compileProcess.run()
+            compileProcess.waitUntilExit()
+
+            // コンパイル時のエラー出力の読み取り
+            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            let errorString = String(data: errorData, encoding: .utf8) ?? ""
+
+            if compileProcess.terminationStatus != 0, !errorString.isEmpty {
+                outputText += "コンパイルエラー: \(errorString)\n"
+            }
+
+            // コンパイルに失敗した場合、ここで終了
+            guard compileProcess.terminationStatus == 0 else {
+                commandStatus = compileProcess.terminationStatus
+                return
+            }
+
+        } catch {
+            outputText = "エラー: swiftc の実行に失敗しました。"
+            return
+        }
+
+        // 2. コンパイルしたファイルの実行
+        let runProcess = Process()
+        runProcess.executableURL = executableURL
 
         let inputPipe = Pipe()
         let outputPipe = Pipe()
-        let errorPipe = Pipe() // エラー出力用のパイプを追加
+        let runErrorPipe = Pipe()
 
-        process.standardInput = inputPipe
-        process.standardOutput = outputPipe
-        process.standardError = errorPipe // エラー出力にパイプを設定
+        runProcess.standardInput = inputPipe
+        runProcess.standardOutput = outputPipe
+        runProcess.standardError = runErrorPipe
 
         do {
-            try process.run()
+            try runProcess.run()
 
             if let inputData = inputText.data(using: .utf8) {
                 inputPipe.fileHandleForWriting.write(inputData)
             }
             inputPipe.fileHandleForWriting.closeFile()
 
-            // 標準出力の読み取り
+            // 実行時の標準出力の読み取り
             let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let outputString = String(data: outputData, encoding: .utf8) ?? "エラー: 出力を読み取れませんでした。"
 
-            // エラー出力の読み取り
-            let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-            let errorString = String(data: errorData, encoding: .utf8) ?? ""
+            // 実行時のエラー出力の読み取り
+            let runErrorData = runErrorPipe.fileHandleForReading.readDataToEndOfFile()
+            let runErrorString = String(data: runErrorData, encoding: .utf8) ?? ""
 
-            // コマンドの終了ステータスを取得
-            process.waitUntilExit()
-            let status = process.terminationStatus
+            // 実行終了まで待機
+            runProcess.waitUntilExit()
+            let status = runProcess.terminationStatus
 
             // 出力を更新
             commandStatus = status
-            if !errorString.isEmpty {
-                outputText += "エラー: \(errorString)\n"
+            if !runErrorString.isEmpty {
+                outputText += "実行エラー: \(runErrorString)\n"
             }
             outputText += outputString
 
         } catch {
-            outputText = "エラー: コマンドの実行に失敗しました。"
+            outputText = "エラー: プログラムの実行に失敗しました。"
         }
-
-        // TODO:
-        // - 実行してからの経過時間をカウントする
-
     }
+
 
     private func loadFiles() {
         do {

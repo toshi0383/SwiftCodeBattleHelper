@@ -30,7 +30,7 @@ struct ContentView: View {
             }
         } detail: {
             content
-                .navigationTitle("SwiftCodeBattle")
+                .navigationTitle("Runtime Performance is the King")
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
                         copiedMessage
@@ -90,7 +90,11 @@ struct ContentView: View {
             }
             EqualWidthHStack {
                 VStack(alignment: .leading) {
-                    Text("stdin")
+                    HStack(alignment: .center) {
+                        Text("stdin")
+                        pasteButton
+                        deleteButton
+                    }
                     TextEditor(text: $inputText)
                         .padding()
                         .background(.background)
@@ -130,6 +134,27 @@ struct ContentView: View {
         .keyboardShortcut(.return, modifiers: [.command])
     }
 
+    @ViewBuilder
+    private var pasteButton: some View {
+        Button {
+            let pasteboard = NSPasteboard.general
+            if let s = pasteboard.string(forType: .string) {
+                inputText = s
+            }
+        } label: {
+            Text("paste")
+        }
+        .keyboardShortcut("p", modifiers: [.command])
+    }
+    @ViewBuilder
+    private var deleteButton: some View {
+        Button {
+            inputText = ""
+        } label: {
+            Image(systemName: "trash")
+        }
+        .keyboardShortcut(.delete, modifiers: [.command])
+    }
     @ViewBuilder
     private var copyButton: some View {
         Button {
