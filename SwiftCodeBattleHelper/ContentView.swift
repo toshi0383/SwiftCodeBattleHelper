@@ -25,6 +25,9 @@ struct ContentView: View {
                 }
                 .onAppear {
                     viewModel.onAppear()
+                    if let directoryURL {
+                        viewModel.onChangeDirectory(to: directoryURL)
+                    }
                 }
                 .onChange(of: directoryURL, initial: true) {
                     selectedFileURL = viewModel.files.first
