@@ -10,14 +10,14 @@ final class ViewModel: ObservableObject {
     @Published private(set) var commandStatus: Int32?
     private var source: DispatchSourceFileSystemObject? = nil
     private let fileManager = FileManager.default
-    let directoryURL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("dev/tmp/SwiftCodeBattleHelper/CLIApp")
+    private var directoryURL: URL?
     private var lastLoadedFileURL: URL?
 
-    func onDirectoryChanged() {
+    func onChangeDirectory(to newURL: URL) {
+        self.directoryURL = newURL
+        lastLoadedFileURL = nil
         loadFiles()
-        if let lastLoadedFileURL {
-            loadFileContents(selectedFileURL: lastLoadedFileURL)
-        }
+        monitorFileChanges()
     }
     func onAppear() {
         loadFiles()
@@ -120,6 +120,7 @@ final class ViewModel: ObservableObject {
 
 
     private func loadFiles() {
+        guard let directoryURL else { return }
         do {
             files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
                 .sorted(by: { a, _ in
@@ -141,6 +142,7 @@ final class ViewModel: ObservableObject {
     }
 
     private func monitorFileChanges() {
+        guard let directoryURL else { return }
         let directoryFileDescriptor = open(directoryURL.path, O_EVTONLY)
 
         guard directoryFileDescriptor != -1 else {
@@ -150,8 +152,9 @@ final class ViewModel: ObservableObject {
 
         let source = DispatchSource.makeFileSystemObjectSource(fileDescriptor: directoryFileDescriptor, eventMask: .all, queue: DispatchQueue.main)
 
-        source.setEventHandler {
-            self.onDirectoryChanged()
+        source.setEventHandler { [weak self] in
+            guard let self, let lastLoadedFileURL else { return }
+            loadFileContents(selectedFileURL: lastLoadedFileURL)
         }
 
         source.setCancelHandler {

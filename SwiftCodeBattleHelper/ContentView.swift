@@ -2,8 +2,10 @@ import SwiftUI
 
 struct ContentView: View {
     @ObservedObject var viewModel = ViewModel()
+    @AppStorage("directoryURL") var directoryURL: URL?
     @AppStorage("selectedFileURL") var selectedFileURL: URL?
     @AppStorage("inputText") var inputText: String = ""
+    @State private var isFileImporterPresented = false
     var body: some View {
         NavigationSplitView {
             VStack {
@@ -23,10 +25,16 @@ struct ContentView: View {
                         viewModel.onSelectFile(url: file)
                     }
                 }
-                Text("Location: " + viewModel.directoryURL.path)
-                    .font(.caption)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
+                if let directoryURL {
+                    Text("Location: " + directoryURL.path)
+                        .font(.caption)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
+                Button("Change Location") {
+                    isFileImporterPresented = true
+                }
+                .padding()
             }
         } detail: {
             content
@@ -46,6 +54,12 @@ struct ContentView: View {
                 .onAppear {
                     viewModel.onAppear()
                 }
+                .onChange(of: directoryURL, initial: true) {
+                    selectedFileURL = viewModel.files.first
+                    if let selectedFileURL {
+                        viewModel.onSelectFile(url: selectedFileURL)
+                    }
+                }
                 .onChange(of: viewModel.files, initial: true) {
                     if selectedFileURL == nil {
                         selectedFileURL = viewModel.files.first
@@ -54,6 +68,17 @@ struct ContentView: View {
                         viewModel.onSelectFile(url: selectedFileURL)
                     }
                 }
+        }
+        .fileImporter(isPresented: $isFileImporterPresented, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first {
+                    directoryURL = url
+                    viewModel.onChangeDirectory(to: url)
+                }
+            case .failure(let error):
+                print("Error selecting directory: \(error.localizedDescription)")
+            }
         }
     }
 
