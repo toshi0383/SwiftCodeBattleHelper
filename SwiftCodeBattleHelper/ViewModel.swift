@@ -7,6 +7,7 @@ final class ViewModel: ObservableObject {
     @Published var outputText: String = ""
     @Published var fileContents: String = ""
     @Published var files: [URL] = []
+    @Published var isCopySuccessfulStateVisible = false
     @Published private(set) var commandStatus: Int32?
     private var source: DispatchSourceFileSystemObject? = nil
     private let fileManager = FileManager.default
@@ -28,6 +29,14 @@ final class ViewModel: ObservableObject {
         lastLoadedFileURL = url
         loadFileContents(selectedFileURL: url)
     }
+
+    func onClickCopyButton() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(fileContents, forType: .string)
+        isCopySuccessfulStateVisible = true
+    }
+
     func executeCommand(selectedFileURL: URL) {
         outputText = ""
 
@@ -73,6 +82,10 @@ final class ViewModel: ObservableObject {
         } catch {
             outputText = "エラー: コマンドの実行に失敗しました。"
         }
+
+        // TODO:
+        // - 実行してからの経過時間をカウントする
+
     }
 
     private func loadFiles() {

@@ -32,14 +32,13 @@ struct ContentView: View {
                 .navigationTitle("SwiftCodeBattle")
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
-                        Button {
-                            if let selectedFileURL {
-                                viewModel.executeCommand(selectedFileURL: selectedFileURL)
-                            }
-                        } label: {
-                            Text("実行")
-                        }
-                        .keyboardShortcut(.return, modifiers: [.command])
+                        copiedMessage
+                    }
+                    ToolbarItem(placement: .automatic) {
+                        copyButton
+                    }
+                    ToolbarItem(placement: .automatic) {
+                        executeButton
                     }
 
                 }
@@ -58,48 +57,86 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    private var content: some View {
-            VStack(spacing: 0) {
-                if selectedFileURL != nil {
-                    ScrollView {
-                        Text(viewModel.fileContents)
-                            .padding()
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(minHeight: 100)
-                    .border(Color.gray, width: 1)
-                    .padding(.vertical)
-                } else {
-                    Text("ファイルを選択してください")
-                }
-                EqualWidthHStack {
-                    VStack(alignment: .leading) {
-                        Text("stdin")
-                        TextEditor(text: $viewModel.inputText)
-                            .padding()
-                            .background(.background)
-                            .border(Color.gray, width: 1)
-                    }
-
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text("stdout")
-                            Spacer()
-                            if let commandStatus = viewModel.commandStatus {
-                                Text("code: \(commandStatus)")
-                            }
-                        }
-                        ScrollView {
-                            Text(viewModel.outputText)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding()
-                        }
-                        .background(.background)
+    private var copiedMessage: some View {
+        Text("コピーしました")
+            .foregroundStyle(.green)
+            .opacity(viewModel.isCopySuccessfulStateVisible ? 1 : 0)
+            .animation(.bouncy(duration: 0.2), value: viewModel.isCopySuccessfulStateVisible)
+            .onChange(of: viewModel.isCopySuccessfulStateVisible) {
+                if viewModel.isCopySuccessfulStateVisible {
+                    Task {
+                        try? await Task.sleep(nanoseconds: 1_000_000_000)
+                        viewModel.isCopySuccessfulStateVisible = false
                     }
                 }
-                .frame(maxWidth: .infinity)
             }
-            .padding()
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        VStack(spacing: 0) {
+            if selectedFileURL != nil {
+                ScrollView {
+                    Text(viewModel.fileContents)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                }
+                .frame(minHeight: 100)
+                .border(Color.gray, width: 1)
+                .padding(.vertical)
+            } else {
+                Text("ファイルを選択してください")
+            }
+            EqualWidthHStack {
+                VStack(alignment: .leading) {
+                    Text("stdin")
+                    TextEditor(text: $viewModel.inputText)
+                        .padding()
+                        .background(.background)
+                        .border(Color.gray, width: 1)
+                }
+
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text("stdout")
+                        Spacer()
+                        if let commandStatus = viewModel.commandStatus {
+                            Text("code: \(commandStatus)")
+                        }
+                    }
+                    ScrollView {
+                        Text(viewModel.outputText)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding()
+                    }
+                    .background(.background)
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding()
+    }
+
+    @ViewBuilder
+    private var executeButton: some View {
+        Button {
+            if let selectedFileURL {
+                viewModel.executeCommand(selectedFileURL: selectedFileURL)
+            }
+        } label: {
+            Text("実行")
+        }
+        .keyboardShortcut(.return, modifiers: [.command])
+    }
+
+    @ViewBuilder
+    private var copyButton: some View {
+        Button {
+            viewModel.onClickCopyButton()
+        } label: {
+            Text("コピー")
+        }
+        .keyboardShortcut("c", modifiers: [.command])
     }
 }
 
