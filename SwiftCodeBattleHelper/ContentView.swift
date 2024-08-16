@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var viewModel = ViewModel()
     @AppStorage("selectedFileURL") var selectedFileURL: URL?
+    @AppStorage("inputText") var inputText: String = ""
     var body: some View {
         NavigationSplitView {
             VStack {
@@ -90,7 +91,7 @@ struct ContentView: View {
             EqualWidthHStack {
                 VStack(alignment: .leading) {
                     Text("stdin")
-                    TextEditor(text: $viewModel.inputText)
+                    TextEditor(text: $inputText)
                         .padding()
                         .background(.background)
                         .border(Color.gray, width: 1)
@@ -121,7 +122,7 @@ struct ContentView: View {
     private var executeButton: some View {
         Button {
             if let selectedFileURL {
-                viewModel.executeCommand(selectedFileURL: selectedFileURL)
+                viewModel.executeCommand(selectedFileURL: selectedFileURL, inputText: inputText)
             }
         } label: {
             Text("実行")

@@ -3,7 +3,6 @@ import Foundation
 
 @MainActor
 final class ViewModel: ObservableObject {
-    @Published var inputText: String = ""
     @Published var outputText: String = ""
     @Published var fileContents: String = ""
     @Published var files: [URL] = []
@@ -37,7 +36,7 @@ final class ViewModel: ObservableObject {
         isCopySuccessfulStateVisible = true
     }
 
-    func executeCommand(selectedFileURL: URL) {
+    func executeCommand(selectedFileURL: URL, inputText: String) {
         outputText = ""
 
         let process = Process()
