@@ -8,36 +8,9 @@ struct ContentView: View {
     @State private var isFileImporterPresented = false
     var body: some View {
         NavigationSplitView {
-            VStack {
-                List(viewModel.files, id: \.self) { file in
-                    HStack {
-                        Image(systemName: "swift")
-                            .foregroundColor(.orange)
-                        Text(file.deletingPathExtension().lastPathComponent)
-                    }
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundStyle(file.lastPathComponent.hasPrefix(".") ? .secondary : .primary)
-                    .listRowBackground(selectedFileURL == file ? Color.blue : Color.clear)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        selectedFileURL = file
-                        viewModel.onSelectFile(url: file)
-                    }
-                }
-                if let directoryURL {
-                    Text("Location: " + directoryURL.path)
-                        .font(.caption)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                }
-                Button("Change Location") {
-                    isFileImporterPresented = true
-                }
-                .padding()
-            }
+            filePane
         } detail: {
-            content
+            workspacePane
                 .navigationTitle("Runtime Performance is the King")
                 .toolbar {
                     ToolbarItem(placement: .automatic) {
@@ -49,7 +22,6 @@ struct ContentView: View {
                     ToolbarItem(placement: .automatic) {
                         executeButton
                     }
-
                 }
                 .onAppear {
                     viewModel.onAppear()
@@ -82,24 +54,41 @@ struct ContentView: View {
         }
     }
 
+
     @ViewBuilder
-    private var copiedMessage: some View {
-        Text("コピーしました")
-            .foregroundStyle(.green)
-            .opacity(viewModel.isCopySuccessfulStateVisible ? 1 : 0)
-            .animation(.bouncy(duration: 0.2), value: viewModel.isCopySuccessfulStateVisible)
-            .onChange(of: viewModel.isCopySuccessfulStateVisible) {
-                if viewModel.isCopySuccessfulStateVisible {
-                    Task {
-                        try? await Task.sleep(nanoseconds: 1_000_000_000)
-                        viewModel.isCopySuccessfulStateVisible = false
-                    }
+    private var filePane: some View {
+        VStack {
+            List(viewModel.files, id: \.self) { file in
+                HStack {
+                    Image(systemName: "swift")
+                        .foregroundColor(.orange)
+                    Text(file.deletingPathExtension().lastPathComponent)
+                }
+                .font(.title3)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(file.lastPathComponent.hasPrefix(".") ? .secondary : .primary)
+                .listRowBackground(selectedFileURL == file ? Color.blue : Color.clear)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedFileURL = file
+                    viewModel.onSelectFile(url: file)
                 }
             }
+            if let directoryURL {
+                Text("Location: " + directoryURL.path)
+                    .font(.caption)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+            }
+            Button("Change Location") {
+                isFileImporterPresented = true
+            }
+            .padding()
+        }
     }
 
     @ViewBuilder
-    private var content: some View {
+    private var workspacePane: some View {
         VStack(spacing: 0) {
             if selectedFileURL != nil {
                 ScrollView {
@@ -145,6 +134,22 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
         }
         .padding()
+    }
+
+    @ViewBuilder
+    private var copiedMessage: some View {
+        Text("コピーしました")
+            .foregroundStyle(.green)
+            .opacity(viewModel.isCopySuccessfulStateVisible ? 1 : 0)
+            .animation(.bouncy(duration: 0.2), value: viewModel.isCopySuccessfulStateVisible)
+            .onChange(of: viewModel.isCopySuccessfulStateVisible) {
+                if viewModel.isCopySuccessfulStateVisible {
+                    Task {
+                        try? await Task.sleep(nanoseconds: 1_000_000_000)
+                        viewModel.isCopySuccessfulStateVisible = false
+                    }
+                }
+            }
     }
 
     @ViewBuilder
