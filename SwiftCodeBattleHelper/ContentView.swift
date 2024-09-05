@@ -112,6 +112,8 @@ struct ContentView: View {
                         Text("stdin")
                         pasteButton
                         deleteButton
+                        Spacer()
+                        countText
                     }
                     TextEditor(text: $inputText)
                         .font(.body.monospaced())
@@ -140,6 +142,11 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
         }
         .padding()
+    }
+
+    @ViewBuilder
+    private var countText: some View {
+        Text("Char: \(viewModel.characterCount)")
     }
 
     @ViewBuilder
