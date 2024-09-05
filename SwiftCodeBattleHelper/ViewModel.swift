@@ -123,10 +123,13 @@ final class ViewModel: ObservableObject {
     private func loadFiles() {
         guard let directoryURL else { return }
         do {
-            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-                .sorted(by: { a, _ in
+            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: [])
+                .filter {
+                    $0.pathExtension == "swift"
+                }
+                .sorted { a, _ in
                     !a.lastPathComponent.hasPrefix(".")
-                })
+                }
         } catch {
             print("ディレクトリの読み込みに失敗しました: \(error)")
         }
