@@ -137,7 +137,7 @@ final class ViewModel: ObservableObject {
             fileContents = try String(contentsOf: selectedFileURL, encoding: .utf8)
             characterCount = countNonWhitespaceCharacters(fileContents)
         } catch {
-            if (error as NSError).code != 260 {
+            if (error as NSError).code != NSFileReadNoSuchFileError {
                 fileContents = "ファイルの読み込みに失敗しました: \(error)"
                 characterCount = 0
             }
