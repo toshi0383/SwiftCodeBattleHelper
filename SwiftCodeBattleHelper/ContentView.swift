@@ -96,10 +96,12 @@ struct ContentView: View {
             if selectedFileURL != nil {
                 ScrollView {
                     Text(viewModel.fileContents)
+                        .font(.body.monospaced())
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
                 }
                 .frame(minHeight: 100)
+                .overlay(countText, alignment: .bottomTrailing)
                 .border(Color.gray, width: 1)
                 .padding(.vertical)
             } else {
@@ -113,6 +115,7 @@ struct ContentView: View {
                         deleteButton
                     }
                     TextEditor(text: $inputText)
+                        .font(.body.monospaced())
                         .padding()
                         .background(.background)
                         .border(Color.gray, width: 1)
@@ -128,6 +131,7 @@ struct ContentView: View {
                     }
                     ScrollView {
                         Text(viewModel.outputText)
+                            .font(.body.monospaced())
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
                     }
@@ -137,6 +141,13 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
         }
         .padding()
+    }
+
+    @ViewBuilder
+    private var countText: some View {
+        Text("count: \(viewModel.characterCount)")
+            .foregroundStyle(.secondary)
+            .padding()
     }
 
     @ViewBuilder

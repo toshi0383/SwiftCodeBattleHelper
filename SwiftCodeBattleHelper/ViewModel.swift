@@ -8,6 +8,7 @@ final class ViewModel: ObservableObject {
     @Published var files: [URL] = []
     @Published var isCopySuccessfulStateVisible = false
     @Published private(set) var commandStatus: Int32?
+    @Published private(set) var characterCount: Int = 0
     private var source: DispatchSourceFileSystemObject? = nil
     private let fileManager = FileManager.default
     private var directoryURL: URL?
@@ -122,10 +123,13 @@ final class ViewModel: ObservableObject {
     private func loadFiles() {
         guard let directoryURL else { return }
         do {
-            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: nil)
-                .sorted(by: { a, _ in
+            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: [])
+                .filter {
+                    $0.pathExtension == "swift"
+                }
+                .sorted { a, _ in
                     !a.lastPathComponent.hasPrefix(".")
-                })
+                }
         } catch {
             print("ディレクトリの読み込みに失敗しました: \(error)")
         }
@@ -134,11 +138,22 @@ final class ViewModel: ObservableObject {
     private func loadFileContents(selectedFileURL: URL) {
         do {
             fileContents = try String(contentsOf: selectedFileURL, encoding: .utf8)
+            characterCount = countNonWhitespaceCharacters(fileContents)
         } catch {
-            if (error as NSError).code != 260 {
+            if (error as NSError).code != NSFileReadNoSuchFileError {
                 fileContents = "ファイルの読み込みに失敗しました: \(error)"
+                characterCount = 0
             }
         }
+    }
+
+    private func countNonWhitespaceCharacters(_ content: String) -> Int {
+        content.filter {
+            !$0.unicodeScalars.allSatisfy {
+                CharacterSet.whitespacesAndNewlines.contains($0)
+            }
+        }
+        .count
     }
 
     private func monitorFileChanges() {
