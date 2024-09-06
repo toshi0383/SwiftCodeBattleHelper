@@ -101,6 +101,7 @@ struct ContentView: View {
                         .padding()
                 }
                 .frame(minHeight: 100)
+                .overlay(countText, alignment: .bottomTrailing)
                 .border(Color.gray, width: 1)
                 .padding(.vertical)
             } else {
@@ -112,8 +113,6 @@ struct ContentView: View {
                         Text("stdin")
                         pasteButton
                         deleteButton
-                        Spacer()
-                        countText
                     }
                     TextEditor(text: $inputText)
                         .font(.body.monospaced())
@@ -146,7 +145,9 @@ struct ContentView: View {
 
     @ViewBuilder
     private var countText: some View {
-        Text("Char: \(viewModel.characterCount)")
+        Text("count: \(viewModel.characterCount)")
+            .foregroundStyle(.secondary)
+            .padding()
     }
 
     @ViewBuilder
