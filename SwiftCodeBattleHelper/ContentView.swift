@@ -268,7 +268,7 @@ struct ContentView: View {
         Button {
             viewModel.onClickCopyButton()
         } label: {
-            Text("コピー")
+            Image(systemName: "clipboard")
         }
         .keyboardShortcut("c", modifiers: [.command])
     }
