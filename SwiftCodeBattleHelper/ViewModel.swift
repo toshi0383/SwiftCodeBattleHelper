@@ -37,7 +37,14 @@ final class ViewModel: ObservableObject {
         isCopySuccessfulStateVisible = true
     }
 
-    func executeCommand(selectedFileURL: URL, inputText: String) {
+    func onClickCopyOutputButton() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(outputText, forType: .string)
+    }
+
+
+    func executeCommand(selectedFileURL: URL, inputText: String, expectedOutputText: String) {
         outputText = ""
 
         // 書き込み可能な一時ディレクトリを取得
