@@ -5,6 +5,7 @@ struct ContentView: View {
     @AppStorage("directoryURL") var directoryURL: URL?
     @AppStorage("selectedFileURL") var selectedFileURL: URL?
     @AppStorage("inputText") var inputText: String = ""
+    @AppStorage("expectedOutputText") var expectedOutputText: String = ""
     @State private var isFileImporterPresented = false
     var body: some View {
         NavigationSplitView {
@@ -57,7 +58,6 @@ struct ContentView: View {
         }
     }
 
-
     @ViewBuilder
     private var filePane: some View {
         VStack {
@@ -109,16 +109,32 @@ struct ContentView: View {
             }
             EqualWidthHStack {
                 VStack(alignment: .leading) {
-                    HStack(alignment: .center) {
-                        Text("stdin")
-                        pasteButton
-                        deleteButton
+                    VStack(alignment: .leading) {
+                        HStack(alignment: .center) {
+                            Text("stdin")
+                            pasteButton
+                            deleteButton
+                        }
+                        TextEditor(text: $inputText)
+                            .font(.body.monospaced())
+                            .padding()
+                            .background(.background)
+                            .border(Color.gray, width: 1)
                     }
-                    TextEditor(text: $inputText)
-                        .font(.body.monospaced())
-                        .padding()
-                        .background(.background)
-                        .border(Color.gray, width: 1)
+
+                    VStack(alignment: .leading) {
+                        HStack(alignment: .center) {
+                            expectedOutputStatus
+                            Text("expected output")
+                            pasteExpectedOutputButton
+                            deleteExpectedOutputButton
+                        }
+                        TextEditor(text: $expectedOutputText)
+                            .font(.body.monospaced())
+                            .padding()
+                            .background(.background)
+                            .border(Color.gray, width: 1)
+                    }
                 }
 
                 VStack(alignment: .leading) {
@@ -129,11 +145,14 @@ struct ContentView: View {
                             Text("code: \(commandStatus)")
                         }
                     }
-                    ScrollView {
-                        Text(viewModel.outputText)
-                            .font(.body.monospaced())
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding()
+                    ZStack(alignment: .topTrailing) {
+                        ScrollView {
+                            Text(viewModel.outputText)
+                                .font(.body.monospaced())
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding()
+                        }
+                        copyOutputButton
                     }
                     .background(.background)
                 }
@@ -144,10 +163,30 @@ struct ContentView: View {
     }
 
     @ViewBuilder
+    private var expectedOutputStatus: some View {
+        Group {
+            if expectedOutputText.isEmpty {
+                Color.gray
+            } else {
+                // NOTE: zip ... 末尾以外の改行差異は不正解とし、末尾の改行差異は無視する意図
+                let isWrong: Bool = zip(expectedOutputText, viewModel.outputText).contains { $0 != $1 }
+                if isWrong {
+                    Color.red
+                } else {
+                    Color.green
+                }
+            }
+        }
+        .clipShape(Circle())
+        .frame(width: 12, height: 12)
+    }
+
+    @ViewBuilder
     private var countText: some View {
         Text("count: \(viewModel.characterCount)")
             .foregroundStyle(.secondary)
-            .padding()
+            .padding(4)
+            .padding(.horizontal, 12)
     }
 
     @ViewBuilder
@@ -170,7 +209,7 @@ struct ContentView: View {
     private var executeButton: some View {
         Button {
             if let selectedFileURL {
-                viewModel.executeCommand(selectedFileURL: selectedFileURL, inputText: inputText)
+                viewModel.executeCommand(selectedFileURL: selectedFileURL, inputText: inputText, expectedOutputText: expectedOutputText)
             }
         } label: {
             Text("実行")
@@ -190,6 +229,7 @@ struct ContentView: View {
         }
         .keyboardShortcut("p", modifiers: [.command])
     }
+
     @ViewBuilder
     private var deleteButton: some View {
         Button {
@@ -199,14 +239,49 @@ struct ContentView: View {
         }
         .keyboardShortcut(.delete, modifiers: [.command])
     }
+
+    @ViewBuilder
+    private var pasteExpectedOutputButton: some View {
+        Button {
+            let pasteboard = NSPasteboard.general
+            if let s = pasteboard.string(forType: .string) {
+                expectedOutputText = s
+            }
+        } label: {
+            Text("paste")
+        }
+        .keyboardShortcut("p", modifiers: [.command, .option])
+    }
+
+    @ViewBuilder
+    private var deleteExpectedOutputButton: some View {
+        Button {
+            expectedOutputText = ""
+        } label: {
+            Image(systemName: "trash")
+        }
+        .keyboardShortcut(.delete, modifiers: [.command, .option])
+    }
+
     @ViewBuilder
     private var copyButton: some View {
         Button {
             viewModel.onClickCopyButton()
         } label: {
-            Text("コピー")
+            Image(systemName: "clipboard")
         }
         .keyboardShortcut("c", modifiers: [.command])
+    }
+
+    @ViewBuilder
+    private var copyOutputButton: some View {
+        Button {
+            viewModel.onClickCopyOutputButton()
+        } label: {
+            Image(systemName: "clipboard")
+        }
+        .padding(4)
+        .keyboardShortcut("c", modifiers: [.command, .shift])
     }
 }
 
