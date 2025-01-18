@@ -45,16 +45,17 @@ final class ViewModel: ObservableObject {
 
 
     func executeCommand(selectedFileURL: URL, inputText: String, expectedOutputText: String) {
+        guard let directoryURL else { fatalError() }
         outputText = ""
 
-        // 書き込み可能な一時ディレクトリを取得
-        let tempDirectory = FileManager.default.temporaryDirectory
-        let executableURL = tempDirectory.appendingPathComponent(UUID().uuidString) // 一意の名前を付ける
+        // 0. Change directory
+        fileManager.changeCurrentDirectoryPath(directoryURL.path)
+        print(fileManager.currentDirectoryPath)
 
-        // 1. swiftc file の実行
+        // 1. swift build の実行
         let compileProcess = Process()
-        compileProcess.executableURL = URL(fileURLWithPath: "/usr/bin/swiftc")
-        compileProcess.arguments = [selectedFileURL.path, "-o", executableURL.path]
+        compileProcess.executableURL = URL(fileURLWithPath: "/usr/bin/swift")
+        compileProcess.arguments = ["build"]
 
         let errorPipe = Pipe() // エラー出力用のパイプ
         compileProcess.standardError = errorPipe
@@ -82,9 +83,9 @@ final class ViewModel: ObservableObject {
             return
         }
 
-        // 2. コンパイルしたファイルの実行
+        // 2. バイナリの実行
         let runProcess = Process()
-        runProcess.executableURL = executableURL
+        runProcess.executableURL = URL(fileURLWithPath: directoryURL.path + "/.build/debug/CLIApp")
 
         let inputPipe = Pipe()
         let outputPipe = Pipe()
@@ -130,13 +131,11 @@ final class ViewModel: ObservableObject {
     private func loadFiles() {
         guard let directoryURL else { return }
         do {
-            files = try fileManager.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: [])
-                .filter {
-                    $0.pathExtension == "swift"
-                }
-                .sorted { a, _ in
-                    !a.lastPathComponent.hasPrefix(".")
-                }
+            // Recursive search
+            files = fileManager.enumerator(at: directoryURL, includingPropertiesForKeys: nil)!
+                .compactMap { $0 as? URL }
+                .filter { !$0.pathComponents.contains(".build") && $0.lastPathComponent == "main.swift" && !$0.lastPathComponent.hasPrefix(".") }
+                .sorted { $0.lastPathComponent < $1.lastPathComponent }
         } catch {
             print("ディレクトリの読み込みに失敗しました: \(error)")
         }
