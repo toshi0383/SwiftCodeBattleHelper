@@ -164,7 +164,7 @@ final class ViewModel: ObservableObject {
 
     private func monitorFileChanges() {
         guard let directoryURL else { return }
-        let directoryFileDescriptor = open(directoryURL.path, O_EVTONLY)
+        let directoryFileDescriptor = open(directoryURL.path + "/Sources", O_EVTONLY)
 
         guard directoryFileDescriptor != -1 else {
             print("ディレクトリを監視できませんでした: \(directoryURL.path)")
