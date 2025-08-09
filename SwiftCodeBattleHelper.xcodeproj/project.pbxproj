@@ -3,12 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		1FECDE222D3BF7E9008E2778 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 1FECDE212D3BF7E9008E2778 /* Collections */; };
-		1FECDE242D3BF8F0008E2778 /* CLIApp in Resources */ = {isa = PBXBuildFile; fileRef = 1FECDE232D3BF8F0008E2778 /* CLIApp */; };
 		8A5660572C6B9F8B00467B65 /* SwiftCodeBattleHelperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5660562C6B9F8B00467B65 /* SwiftCodeBattleHelperApp.swift */; };
 		8A5660592C6B9F8B00467B65 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5660582C6B9F8B00467B65 /* ContentView.swift */; };
 		8A56605B2C6B9F8D00467B65 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A56605A2C6B9F8D00467B65 /* Assets.xcassets */; };
@@ -17,8 +16,19 @@
 		8A5660682C6BB67000467B65 /* EqualWidthHStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A5660672C6BB67000467B65 /* EqualWidthHStack.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8AE9B0382E479C0100C8BFAE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		1FECDE232D3BF8F0008E2778 /* CLIApp */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CLIApp; sourceTree = "<group>"; };
 		8A5660532C6B9F8B00467B65 /* SwiftCodeBattleHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftCodeBattleHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A5660562C6B9F8B00467B65 /* SwiftCodeBattleHelperApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftCodeBattleHelperApp.swift; sourceTree = "<group>"; };
 		8A5660582C6B9F8B00467B65 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -27,7 +37,12 @@
 		8A56605F2C6B9F8D00467B65 /* SwiftCodeBattleHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftCodeBattleHelper.entitlements; sourceTree = "<group>"; };
 		8A5660652C6BAA5600467B65 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		8A5660672C6BB67000467B65 /* EqualWidthHStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EqualWidthHStack.swift; sourceTree = "<group>"; };
+		8AE9B03A2E479C0100C8BFAE /* CLIApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CLIApp; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8AE9B03B2E479C0100C8BFAE /* CLIApp */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CLIApp; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		8A5660502C6B9F8B00467B65 /* Frameworks */ = {
@@ -35,6 +50,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FECDE222D3BF7E9008E2778 /* Collections in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8AE9B0372E479C0100C8BFAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -51,8 +73,8 @@
 		8A56604A2C6B9F8B00467B65 = {
 			isa = PBXGroup;
 			children = (
-				1FECDE232D3BF8F0008E2778 /* CLIApp */,
 				8A5660552C6B9F8B00467B65 /* SwiftCodeBattleHelper */,
+				8AE9B03B2E479C0100C8BFAE /* CLIApp */,
 				8A5660542C6B9F8B00467B65 /* Products */,
 				1FECDE202D3BF7E9008E2778 /* Frameworks */,
 			);
@@ -62,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				8A5660532C6B9F8B00467B65 /* SwiftCodeBattleHelper.app */,
+				8AE9B03A2E479C0100C8BFAE /* CLIApp */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,6 +134,28 @@
 			productReference = 8A5660532C6B9F8B00467B65 /* SwiftCodeBattleHelper.app */;
 			productType = "com.apple.product-type.application";
 		};
+		8AE9B0392E479C0100C8BFAE /* CLIApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8AE9B0402E479C0100C8BFAE /* Build configuration list for PBXNativeTarget "CLIApp" */;
+			buildPhases = (
+				8AE9B0362E479C0100C8BFAE /* Sources */,
+				8AE9B0372E479C0100C8BFAE /* Frameworks */,
+				8AE9B0382E479C0100C8BFAE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8AE9B03B2E479C0100C8BFAE /* CLIApp */,
+			);
+			name = CLIApp;
+			packageProductDependencies = (
+			);
+			productName = CLIApp;
+			productReference = 8AE9B03A2E479C0100C8BFAE /* CLIApp */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -118,11 +163,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1520;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					8A5660522C6B9F8B00467B65 = {
 						CreatedOnToolsVersion = 15.2;
+					};
+					8AE9B0392E479C0100C8BFAE = {
+						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
@@ -143,6 +191,7 @@
 			projectRoot = "";
 			targets = (
 				8A5660522C6B9F8B00467B65 /* SwiftCodeBattleHelper */,
+				8AE9B0392E479C0100C8BFAE /* CLIApp */,
 			);
 		};
 /* End PBXProject section */
@@ -154,7 +203,6 @@
 			files = (
 				8A56605E2C6B9F8D00467B65 /* Preview Assets.xcassets in Resources */,
 				8A56605B2C6B9F8D00467B65 /* Assets.xcassets in Resources */,
-				1FECDE242D3BF8F0008E2778 /* CLIApp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +217,13 @@
 				8A5660662C6BAA5600467B65 /* ViewModel.swift in Sources */,
 				8A5660572C6B9F8B00467B65 /* SwiftCodeBattleHelperApp.swift in Sources */,
 				8A5660682C6BB67000467B65 /* EqualWidthHStack.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8AE9B0362E479C0100C8BFAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,6 +402,26 @@
 			};
 			name = Release;
 		};
+		8AE9B03E2E479C0100C8BFAE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8AE9B03F2E479C0100C8BFAE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -364,6 +439,15 @@
 			buildConfigurations = (
 				8A5660632C6B9F8D00467B65 /* Debug */,
 				8A5660642C6B9F8D00467B65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8AE9B0402E479C0100C8BFAE /* Build configuration list for PBXNativeTarget "CLIApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AE9B03E2E479C0100C8BFAE /* Debug */,
+				8AE9B03F2E479C0100C8BFAE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
