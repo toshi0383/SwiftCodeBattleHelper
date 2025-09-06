@@ -40,8 +40,18 @@
 		8AE9B03A2E479C0100C8BFAE /* CLIApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CLIApp; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8A4DAD242E6C133100549137 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Package.swift,
+			);
+			target = 8AE9B0392E479C0100C8BFAE /* CLIApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8AE9B03B2E479C0100C8BFAE /* CLIApp */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = CLIApp; sourceTree = "<group>"; };
+		8AE9B03B2E479C0100C8BFAE /* CLIApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (8A4DAD242E6C133100549137 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = CLIApp; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
